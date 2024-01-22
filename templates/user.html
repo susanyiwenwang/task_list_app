@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="py-3 mb-4 border-bottom bg-info bg-gradient">
+    <div class="container d-flex flex-wrap justify-content-center">
+      <a href="/" class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
+        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+        <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
+        </svg>
+       <span class="fs-4 px-2">{{ user.name }}'s To-Do's</span>
+      </a>
+    </div>
+  </header>
+
+<!-- Body -->
+{% from "bootstrap5/form.html" import render_form %}
+<div class="container d-flex flex-wrap gap-4">
+
+{% if current_user.is_authenticated: %}
+<!-- new tasks  -->
+<div class="list-group col">
+    {% for task in tasks: %}
+        {% if task.active: %}
+    <form action="{{ url_for('complete_user_task', user_id=user.id, task_id=task.id) }}">
+    <label class="list-group-item d-flex gap-3">
+      <input class="form-check-input flex-shrink-0" type="checkbox" name="task-item" value="done" style="font-size: 1.375em;" onchange="this.form.submit()">
+      <span class="pt-1 form-checked-content justify-content-between">
+        <strong>{{ task.entry }}</strong>
+        <small class="d-block text-body-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
+            <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+           </svg>
+          {{ task.due_date }}
+        </small>
+      </span>
+    </label>
+    </form>
+    {% endif %}
+    {% endfor %}
+    <div class="py-4"></div>
+
+<!-- completed tasks -->
+    {% for task in tasks: %}
+    {% if not task.active: %}
+    <label class="list-group-item d-flex gap-3 bg-body-tertiary">
+        <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" checked="">
+      <span class="pt-1 form-checked-content">
+        <span contenteditable="true" class="w-100"><del>{{ task.entry }}</del></span>
+        <small class="d-block text-body-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
+            <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+           </svg>
+            {{ task.due_date }}
+        </small>
+      </span>
+    </label>
+    {% endif %}
+    {% endfor %}
+
+<!-- tasks entry form -->
+  </div>
+    <form class="col-4" action="{{ url_for('user_home', userid=user.id) }}" method="post" novalidate>
+        <div class="form-group">
+            {{ render_form(form, button_style="warning") }}
+        </div>
+    </form>
+</div>
+{% endif %}
+{% endblock %}
