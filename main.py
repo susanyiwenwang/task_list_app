@@ -1,23 +1,27 @@
-from flask import Flask, render_template, url_for, redirect, request, flash
+from flask import Flask, render_template, url_for, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import date
-from forms import TaskEntry, RegisterForm, LoginForm
+from forms import TaskEntry, RegisterForm, LoginForm, MessageForm
 from flask_bootstrap import Bootstrap5
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
-# from flask_modals import Modal, render_template_modal
+from flask_ckeditor import CKEditor
+import os
 
-ADMIN_EMAIL = "admin@abc.net"
+# TODO secure sensitive information
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
+ADMIN_PASS = os.environ.get("ADMIN_PASS")
 
 app = Flask(__name__)
 # modal = Modal(app)
-app.config['SECRET_KEY'] = "AdrianDoesTasks"
+app.config['SECRET_KEY'] = os.environ.get("FLASK_KEY")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///tasks.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URI", "sqlite:///tasks.db")
+
 db = SQLAlchemy()
 db.init_app(app)
 Bootstrap5(app)
+ckeditor = CKEditor(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -69,20 +73,20 @@ with app.app_context():
 
 @app.route('/', methods=["GET", "POST"])
 def home():
-    # TODO: refresh
-    # admin_pass = generate_password_hash(
-    #     password="adminPassword",
-    #     method="pbkdf2:sha256",
-    #     salt_length=8)
-    # admin = User(name="admin", email=ADMIN_EMAIL, password=admin_pass)
-    # db.session.add(admin)
-    # db.session.commit()
+    task_list = []
     admin = db.session.execute(db.select(User).where(User.email == ADMIN_EMAIL)).scalar()
-    result = db.session.execute(db.select(Task).where(Task.user_id == admin.id))
-    # order_by(Task.due_date))
-    all_tasks = result.scalars()
-    task_list = [task.to_dict() for task in all_tasks]
-
+    if admin:
+        result = db.session.execute(db.select(Task).where(Task.user_id == admin.id))
+        all_tasks = result.scalars()
+        task_list = [task.to_dict() for task in all_tasks]
+    else:
+        admin_pass = generate_password_hash(
+            password=ADMIN_PASS,
+            method="pbkdf2:sha256",
+            salt_length=8)
+        admin = User(name="admin", email=ADMIN_EMAIL, password=admin_pass)
+        db.session.add(admin)
+        db.session.commit()
 
     # registration form
     r_form = RegisterForm()
@@ -214,8 +218,28 @@ def delete_samples():
 
 @app.route('/logout')
 def logout():
+    admin = db.session.execute(db.select(User).where(User.email == ADMIN_EMAIL)).scalar()
+    result = db.session.execute(db.select(Task).where(Task.user_id == admin.id))
+    delete_list = result.scalars()
+    for entry in delete_list:
+        db.session.delete(entry)
+        db.session.commit()
     logout_user()
     return redirect(url_for('home'))
+
+
+@app.route("/about", methods=["POST","GET"])
+def about():
+    r_form = RegisterForm()
+    l_form = LoginForm()
+    message_form = MessageForm()
+    if message_form.validate_on_submit():
+        name = message_form.name.data
+        email = message_form.email.data
+        message = message_form.message.data
+        flash("Thank you! Message has been sent.")
+        return redirect(url_for('about'))
+    return render_template("about.html", m_form=message_form, r_form=r_form, login_form=l_form)
 
 
 if __name__ == "__main__":

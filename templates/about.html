@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "bootstrap5/form.html" import render_form %}
+{% block content %}
+<nav class="py-2 bg-body-tertiary border-bottom">
+    <div class="container d-flex flex-wrap">
+      <ul class="nav me-auto">
+        <li class="nav-item"><a href="/" class="nav-link link-body-emphasis px-2 active" aria-current="page">Home</a></li>
+        <!-- <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Task Lists</a></li>
+        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Starred</a></li> -->
+        <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link link-body-emphasis px-2">About</a></li>
+      </ul>
+      <ul class="nav">
+        {% if not current_user.is_authenticated: %}
+        <li class="nav-item"><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#login">Login</button></li>
+        <li class="nav-item"><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#register">Sign Up</button></li>
+        {% else: %}
+        <li class="nav-item"><a href="{{ url_for('logout') }}">
+            <button type="button" class="btn">Log out</button></a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+<header class="py-3 mb-4 border-bottom bg-info bg-gradient">
+    <div class="container d-flex flex-wrap justify-content-center">
+      <a href="/" class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
+        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+        <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
+        </svg>
+       <span class="fs-4 px-2">About this website</span>
+      </a>
+    </div>
+  </header>
+
+
+<div class="container py-3">
+    <p>This app was created as a project for personal use. <br/>Use as you like to organize your tasks.</p>
+    <p>If you have any questions or suggestions, feel free to leave a message for me here!</p>
+    <div class="my-4 col-6">
+   {% with messages = get_flashed_messages() %}
+       {% if messages %}
+          {% for message in messages %}
+              <p class="flash text-primary px-2 pt-2">{{ message }}</p>
+          {% endfor %}
+       {% endif %}
+   {% endwith %}
+    <form action="{{ url_for('about') }}" method="post" novalidate>
+    {{ ckeditor.load() }} {{ ckeditor.config(name='message') }}
+        {{ render_form(m_form, novalidate=True, button_map={"submit": "info"}) }}
+    </form>
+    </div>
+</div>
+{% include "modal.html" %}
+
+{% endblock %}

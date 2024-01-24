@@ -8,33 +8,6 @@
 </head>
 
 <body>
-<nav class="py-2 bg-body-tertiary border-bottom">
-    <div class="container d-flex flex-wrap">
-      <ul class="nav me-auto">
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2 active" aria-current="page">Home</a></li>
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Task Lists</a></li>
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Starred</a></li>
-        <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Contact</a></li>
-      </ul>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="flash text-danger px-2 pt-2">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-      <ul class="nav">
-        {% if not current_user.is_authenticated: %}
-        <li class="nav-item"><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#login">Login</button></li>
-        <li class="nav-item"><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#register">Sign Up</button></li>
-        {% else: %}
-        <li class="nav-item"><a href="{{ url_for('logout') }}">
-            <button type="button" class="btn">Log out</button></a></li>
-        {% endif %}
-      </ul>
-    </div>
-  </nav>
-
 {% block content %}
 {% endblock %}
 

@@ -1,0 +1,56 @@
+<!-- login Modal -->
+<div class="modal" id="login">
+<div class="modal-dialog">
+<div class="modal-content rounded-4 shadow">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <h1 class="fw-bold mb-0 fs-2">Welcome back!</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-5 pt-0">
+        <form class="" action="{{ url_for('login') }}" method="post">
+            {{ login_form.csrf_token }}
+          <div class="form-group mb-3">
+            {{ login_form.email.label }}
+            {{ login_form.email(class_="form-control") }}
+          </div>
+          <div class="form-group mb-3">
+            {{ login_form.password.label }}
+            {{ login_form.password(class_="form-control") }}
+          </div>
+            {{ login_form.submit(class_="form-control btn btn-info") }}
+          <hr class="my-4">
+        </form>
+      </div>
+    </div>
+    </div>
+  </div>
+<!-- Registration modal -->
+<div class="modal" id="register">
+<div class="modal-dialog">
+<div class="modal-content rounded-4 shadow">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <h1 class="fw-bold mb-0 fs-2">Sign up with us!</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-5 pt-0">
+        <form class="form-group" action="{{ url_for('register') }}" method="post" novalidate>
+            {{ r_form.csrf_token }}
+          <div class="form-group mb-3">
+             {{ r_form.name.label }}
+             {{ r_form.name(class_="form-control") }}
+           </div>
+           <div class="form-group mb-3">
+            {{ r_form.email.label }}
+            {{ r_form.email(class_="form-control") }}
+          </div>
+          <div class="form-group mb-3">
+            {{ r_form.password.label }}
+            {{ r_form.password(class_="form-control") }}
+          </div>
+            {{ r_form.submit(class_="form-control btn btn-info") }}
+          <hr class="my-4">
+        </form>
+      </div>
+    </div>
+    </div>
+  </div>
